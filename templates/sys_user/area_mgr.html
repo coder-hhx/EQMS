@@ -1,0 +1,207 @@
+{% extends 'basic/base.html' %}
+
+{% block content_nav %}
+    <li>区域信息管理</li>
+{% endblock %}
+
+{% block title %}
+    区域信息管理
+{% endblock %}
+
+{% block content %}
+
+    <a href="#" class="btn btn-success" data-toggle="modal" data-target="#add1" style="margin: 5px 0">添加地址信息</a>
+    <table class="table table-bordered table-striped text-center bg-info">
+        <thead>
+        <tr class="info">
+            <th class="text-left" width="200px">区域</th>
+            <th class="text-left">地址</th>
+            <th class="text-center" width="200px"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for area in page.object_list %}
+            <tr>
+                <td class="text-left">{{ area.area }}</td>
+                <td class="text-left">{{ area.addr }}</td>
+                <td>
+                    <a href="#" class="btn btn-info btn-sm" data-toggle="modal"
+                       onclick="edit_area({{ area.id }}, '{{ area.area }}', '{{ area.addr }}')">编辑</a>
+                    <a onclick="delete_area({{ area.id }})" class="btn btn-danger btn-sm">删除</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!--添加-->
+    <div class="modal fade" id="add1" tabindex="-1" role="dialog" aria-labelledby="add11">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="add11">添加</h4>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        <li>
+                            <label><span>区域 ：</span></label>
+                            <input id="area" type="text" name="area"/>
+                        </li>
+                        <li>
+                            <label><span>地址 ：</span></label>
+                            <input id="addr" type="text" name="addr"/>
+                        </li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">取消</button>
+                    <button onclick="add_addr($('#area').val(), $('#addr').val())" class="btn btn-primary btn-sm">保存
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑 -->
+    <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="add11">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="add11">编辑</h4>
+                </div>
+                <div class="modal-body">
+                    <ul>
+                        <li>
+                            <label><span>区域 ：</span></label>
+                            <input id="edit_area" type="text" name="area"/>
+                        </li>
+                        <li>
+                            <label><span>地址 ：</span></label>
+                            <input id="edit_addr" type="text" name="addr"/>
+                        </li>
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">取消</button>
+                    <button onclick="edit_ajax($('#edit_area').val(), $('#edit_addr').val())"
+                            class="btn btn-primary btn-sm">保存
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示 -->
+    <div class="modal fade" id="info" tabindex="-1" role="dialog" aria-labelledby="add11">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="add11">提示信息</h4>
+                </div>
+
+                <div class="modal-body">
+
+                    <h4 id="msg"></h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">取消</button>
+                    <button type="button" onclick="delete_ajax()" class="btn btn-warning btn-sm" data-dismiss="modal">
+                        确定
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    {% include "basic/paginator.html" %}
+
+
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        function to_page(num) {
+            if (num < 1) {
+                num = 1;
+            }
+            if (num > {{ paginator.num_pages }}) {
+                num = {{ paginator.num_pages }};
+            }
+            window.location.href = "/sys/area_mgr/?page_num=" + num;
+        }
+
+        function add_addr(area, addr) {
+            $.ajax({
+                url: '/sys/add_addr/',
+                type: 'POST',
+                data: {'area': area, "addr": addr},
+                success: function (resp) {
+                    $('.alert').html(resp.msg).addClass('alert-success').fadeIn().delay(500).fadeOut();
+                    setTimeout(function () {
+                        if (resp.status == 200) {
+                            open(window.location.href, target = '_self');
+                        }
+                    }, 1600);
+
+                }
+            });
+        }
+
+        let area_id = 0;
+
+        function edit_area(id, area, addr) {
+            area_id = id;
+            $('#edit_area').val(area);
+            $('#edit_addr').val(addr);
+
+            $('#edit').modal('show');
+        }
+
+        function edit_ajax(area, addr) {
+            $.ajax({
+                url: '/sys/edit_addr/',
+                type: 'POST',
+                data: {'id': area_id, 'area': area, "addr": addr},
+                success: function (resp) {
+                    $('.alert').html(resp.msg).addClass('alert-success').fadeIn().delay(500).fadeOut();
+                    setTimeout(function () {
+                        if (resp.status == 200) {
+                            open(window.location.href, target = '_self');
+                        }
+                    }, 1600);
+                }
+            });
+        }
+
+
+        function delete_area(id) {
+            area_id = id;
+            $('#msg').html("确认删除该地址信息？");
+            $('#info').modal('toggle');
+        }
+
+        function delete_ajax() {
+            $.ajax({
+                url: '/sys/delete_addr/',
+                type: 'GET',
+                data: {'id': area_id},
+                success: function (resp) {
+                    $('.alert').html(resp.msg).addClass('alert-success').fadeIn().delay(500).fadeOut();
+                    setTimeout(function () {
+                        if (resp.status == 200) {
+                            open(window.location.href, target = '_self');
+                        }
+                    }, 1600);
+                }
+            });
+        }
+    </script>
+{% endblock %}

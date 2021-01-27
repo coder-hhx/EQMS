@@ -1,0 +1,79 @@
+{% extends 'basic/base.html' %}
+
+{% block content_nav %}
+    <li>入会申请审批</li>
+{% endblock %}
+
+{% block title %}
+    入会申请审批
+{% endblock %}
+
+{% block content %}
+
+    <table class="table table-bordered table-striped text-center bg-info">
+        <thead>
+        <tr class="info">
+            <th class="text-left" width="200px">客户姓名</th>
+            <th class="text-left">电话号码</th>
+{#            <th class="text-left">注册地址</th>#}
+            <th class="text-left" width="200px"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if page.object_list|length == 0 %}
+            <td colspan="4" class="text-left">暂无申请入会的客户！</td>
+        {% endif %}
+        {% for member in page.object_list %}
+            <tr>
+                <td class="text-left">{{ member.name }}</td>
+                <td class="text-left">{{ member.phone }}</td>
+{#                <td class="text-left">{{ member.register_area }}</td>#}
+                <td>
+                    <a href="#" class="btn btn-info btn-sm" data-toggle="modal"
+                       onclick="approve({{ member.id }}, 1)">同意</a>
+
+                    <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
+                       onclick="approve({{ member.id }}, 2)">拒绝</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+    {% include "basic/paginator.html" %}
+
+
+{% endblock %}
+
+{% block js %}
+    <script>
+
+        function to_page(num) {
+            if (num < 1) {
+                num = 1;
+            }
+            if (num > {{ paginator.num_pages }}) {
+                num = {{ paginator.num_pages }};
+            }
+            window.location.href = "/sys/get_initiation_mem/?page_num=" + num;
+        }
+
+
+        function approve(mem_id, code) {
+            $.ajax({
+                url: '/sys/activate_member/',
+                type: 'GET',
+                data: {'id': mem_id, 'code': code},
+                success: function (resp) {
+                    $('.alert').html(resp.msg).addClass('alert-success').fadeIn().delay(500).fadeOut();
+                    setTimeout(function () {
+                        if (resp.status == 200) {
+                            open(window.location.href, target = '_self');
+                        }
+                    }, 1600);
+                }
+            });
+        }
+    </script>
+{% endblock %}

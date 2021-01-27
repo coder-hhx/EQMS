@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>{% block title %}主页{% endblock %}-企业资质资源管理系统</title>
+
+    {% include 'basic/css.html' %}
+
+    {% block css %}
+
+    {% endblock %}
+</head>
+<body>
+
+{% block top %}
+    {% include 'basic/sys_top.html' %}
+{% endblock %}
+
+
+<div class="alert"></div>
+
+<section>
+    <div class="container-fluid">
+        <div class="row ">
+
+            {% block menu %}
+                {% include 'basic/sys_menu.html' %}
+            {% endblock %}
+
+            <div class="col-xs-10">
+                <br/>
+                <ol class="breadcrumb">
+                    <li class="active"><span class="glyphicon glyphicon-home"></span> {% block content_nav_home %}
+                        企业资质资源管理系统{% endblock %}</li>
+                    {% block content_nav %}
+
+                    {% endblock %}
+                </ol>
+                {% block content %}
+                {% endblock %}
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<footer class="bg-primary navbar-fixed-bottom">
+    <p class="text-center text-white">版权所有&copy;xxx</p>
+</footer>
+
+{% include 'basic/js.html' %}
+{% block js %}
+
+{% endblock %}
+
+</body>
+</html>

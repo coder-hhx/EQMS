@@ -1,0 +1,66 @@
+{% extends 'basic/base.html' %}
+
+{% block content_nav %}
+    <li>合同模板下载</li>
+{% endblock %}
+
+{% block top %}
+    {% include 'basic/mem_top.html' %}
+{% endblock %}
+
+{% block menu %}
+    {% include 'basic/mem_menu.html' %}
+{% endblock %}
+
+{% block title %}
+    合同模板下载
+{% endblock %}
+
+{% block content %}
+    <table class="table table-bordered table-striped text-center bg-info">
+        <thead>
+        <tr class="info">
+            <th class="text-left">合同模板</th>
+            <th class="text-center" width="200px"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for compact in page.object_list %}
+            <tr>
+                <td class="text-left">{{ compact }}</td>
+                <td>
+                    <a href="#" class="btn btn-info btn-sm" data-toggle="modal"
+                       onclick="download_compact('{{ compact }}')">下载</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+    {% include "basic/paginator.html" %}
+
+
+{% endblock %}
+
+{% block js %}
+    <script>
+
+        function to_page(num) {
+            if (num < 1) {
+                num = 1;
+            }
+            if (num > {{ paginator.num_pages }}) {
+                num = {{ paginator.num_pages }};
+            }
+            window.location.href = "/sys/compact_mgr/?page_num=" + num;
+        }
+
+
+        function download_compact(compact) {
+            window.location.href = '/sys/download_compact/?file_name=' + compact;
+        }
+
+
+    </script>
+{% endblock %}

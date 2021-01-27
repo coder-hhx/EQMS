@@ -1,0 +1,147 @@
+{% extends 'basic/base.html' %}
+
+{% block content_nav %}
+    <li>资质申请审批</li>
+{% endblock %}
+
+{% block title %}
+    资质申请审批
+{% endblock %}
+
+{% block content %}
+
+    <table class="table table-bordered table-striped text-center bg-info">
+        <thead>
+        <tr class="info">
+            <th class="text-left" width="200px">客户姓名</th>
+            <th class="text-left" width="200px">电话号码</th>
+            <th class="text-left">注册地址</th>
+            <th class="text-left" width="200px"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if page.object_list|length == 0 %}
+            <td colspan="4" class="text-left">暂无申请资质的客户！</td>
+        {% endif %}
+        {% for member in page.object_list %}
+            <tr>
+                <td class="text-left">{{ member.name }}</td>
+                <td class="text-left">{{ member.phone }}</td>
+                <td class="text-left">{{ member.register_area }}</td>
+                <td>
+                    <a href="#" class="btn btn-info btn-sm" data-toggle="modal"
+                       onclick="show_materials({{ member.id }})">查看材料</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 查看材料 -->
+    <div class="modal fade" id="show_materials" tabindex="-1" role="dialog" aria-labelledby="add11">
+        <div class="modal-dialog modal-sm" role="document" style="margin: 50px auto;width: 1020px;">
+            <div class="modal-content" style="width: auto;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="add11">客户材料</h4>
+                </div>
+                <div class="modal-body" style="overflow-y: auto; max-height: 710px;">
+                    <ul id="material_list" style="height: auto;">
+
+                    </ul>
+                </div>
+                <div class="modal-footer">
+                    <button id="pass" onclick="approve(2)" class="btn btn-primary ">通过</button>
+                    <button id="refuse" onclick="approve(3)" class="btn btn-danger ">拒绝</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    {% include "basic/paginator.html" %}
+
+
+{% endblock %}
+
+{% block js %}
+    <script>
+
+        function to_page(num) {
+            if (num < 1) {
+                num = 1;
+            }
+            if (num > {{ paginator.num_pages }}) {
+                num = {{ paginator.num_pages }};
+            }
+            window.location.href = "/sys/all_mem_apply_for/?page_num=" + num;
+        }
+
+        let mem_id = 0;
+
+        function rotate_img(url, i) {
+            $.ajax({
+                url: '/sys/rotate_pic/',
+                type: 'GET',
+                data: {'pic_url': url},
+                success: function (resp) {
+                    if (resp.status == 200) {
+                        url = url + '?' + (new Date()).getTime();
+                        $("#material_list").find('img').eq(i).attr('src', url);
+                    } else {
+                        alert(resp.msg);
+                    }
+                }
+            });
+        }
+
+        function show_materials(id) {
+            mem_id = id;
+            $('#material_list').empty();
+            $('#show_materials').modal('show');
+            $.ajax({
+                url: '/sys/get_mem_materials/',
+                type: 'GET',
+                data: {'id': mem_id},
+                success: function (resp) {
+                    if (resp.status == 200) {
+                        if (resp.pic_list.length == 0) {
+                            $('#material_list').append('<li style="height: auto;">该客户暂未上传照片！</li>');
+                            $('#pass').attr('disabled', true);
+                            $('#refuse').attr('disabled', true);
+                        } else {
+                            for (i = 0; i < resp.pic_list.length; i++) {
+                                pic_url = resp.pic_list[i] + '?' + (new Date()).getTime();
+                                $('#material_list').append('<span style="font-size: 30px;">' + (i + 1) + '.</span><li onclick="rotate_img(\'' + resp.pic_list[i] + '\', ' + i + ');" style="height: auto;"><img style="margin-bottom:20px;width:800px;" src="' + pic_url + '"/></li>');
+                            }
+                            $('#pass').attr('disabled', false);
+                            $('#refuse').attr('disabled', false);
+                        }
+                    } else {
+                        $('.alert').html(resp.msg).addClass('alert-danger').fadeIn().delay(500).fadeOut();
+                    }
+                }
+            });
+
+
+        }
+
+
+        function approve(code) {
+            $.ajax({
+                url: '/sys/change_mem_status/',
+                type: 'POST',
+                data: {'id': mem_id, 'code': code},
+                success: function (resp) {
+                    $('.alert').html(resp.msg).addClass('alert-success').fadeIn().delay(500).fadeOut();
+                    setTimeout(function () {
+                        if (resp.status == 200) {
+                            open(window.location.href, target = '_self');
+                        }
+                    }, 1600);
+                }
+            });
+        }
+    </script>
+{% endblock %}

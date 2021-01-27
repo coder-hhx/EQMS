@@ -1,0 +1,60 @@
+{% extends 'basic/base.html' %}
+
+{% block content_nav %}
+    <li>客户资质查询</li>
+{% endblock %}
+
+{% block title %}
+    客户资质查询
+{% endblock %}
+
+{% block content %}
+    <input type="text" class="form-control" style="width: 300px;display: inline-block;" id="key"
+           placeholder="请输入要查询的关键字" value="{{ key }}"/>
+    <button onclick="search()" class="btn btn-success" style="margin: 5px 0;">搜索</button>
+    <table class="table table-bordered table-striped text-center bg-info">
+        <thead>
+        <tr class="info">
+            <th class="text-left" width="200px">客户姓名</th>
+            <th class="text-left" width="200px">电话号码</th>
+            <th class="text-left">注册地址</th>
+            <th class="text-left" width="200px">资质状态</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for member in page.object_list %}
+            <tr>
+                <td class="text-left">{{ member.name }}</td>
+                <td class="text-left">{{ member.phone }}</td>
+                <td class="text-left">{{ member.register_area }}</td>
+                <td class="text-left">{{ member.qualification.name }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+
+    {% include "basic/paginator.html" %}
+
+
+{% endblock %}
+
+{% block js %}
+    <script>
+
+        function to_page(num) {
+            if (num < 1) {
+                num = 1;
+            }
+            if (num > {{ paginator.num_pages }}) {
+                num = {{ paginator.num_pages }};
+            }
+            window.location.href = "/sys/search_mem_qualification/?page_num=" + num + "&key=" + $('#key').val();
+        }
+
+
+        function search() {
+            window.location.href = "/sys/search_mem_qualification/?key=" + $('#key').val();
+        }
+    </script>
+{% endblock %}

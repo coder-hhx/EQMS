@@ -1,0 +1,67 @@
+<div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
+    <div class="btn-group mr-2" role="group" aria-label="First group">
+        <button onclick="to_page({{ page.number|add:-1 }})" type="button" class="btn">上一页</button>
+    </div>
+    <div class="btn-group mr-2" role="group" aria-label="Second group">
+        {% if paginator.num_pages <= 8 %}
+            {% for i in paginator.page_range %}
+                <button onclick="to_page({{ i }})" type="button" class="btn btn-default">{{ i }}</button>
+            {% endfor %}
+        {% else %}
+            {% if page.number < 5 %}
+                {% for i in paginator.page_range %}
+                    {% if forloop.counter0 < 8 %}
+                        <button style="width: 40px" onclick="to_page({{ i }})" type="button"
+                                class="btn btn-default">{{ i }}</button>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {% if paginator.num_pages|add:-4 >= page.number %}
+                    <button style="width: 40px" onclick="to_page({{ page.number|add:-3 }})" type="button"
+                            class="btn btn-default">{{ page.number|add:-3 }}</button>
+                    <button style="width: 40px" onclick="to_page({{ page.number|add:-2 }})" type="button"
+                            class="btn btn-default">{{ page.number|add:-2 }}</button>
+                    <button style="width: 40px" onclick="to_page({{ page.number|add:-1 }})" type="button"
+                            class="btn btn-default">{{ page.number|add:-1 }}</button>
+                    <button style="width: 40px" onclick="to_page({{ page.number }})" type="button"
+                            class="btn btn-default">{{ page.number }}</button>
+                    <button style="width: 40px" onclick="to_page({{ page.number|add:1 }})" type="button"
+                            class="btn btn-default">{{ page.number|add:1 }}</button>
+                    <button style="width: 40px" onclick="to_page({{ page.number|add:2 }})" type="button"
+                            class="btn btn-default">{{ page.number|add:2 }}</button>
+                    <button style="width: 40px" onclick="to_page({{ page.number|add:3 }})" type="button"
+                            class="btn btn-default">{{ page.number|add:3 }}</button>
+                    <button style="width: 40px" onclick="to_page({{ page.number|add:4 }})" type="button"
+                            class="btn btn-default">{{ page.number|add:4 }}</button>
+                {% else %}
+                    <button style="width: 40px" onclick="to_page({{ paginator.num_pages|add:-7 }})"
+                            type="button"
+                            class="btn btn-default">{{ paginator.num_pages|add:-7 }}</button>
+                    <button style="width: 40px" onclick="to_page({{ paginator.num_pages|add:-6 }})"
+                            type="button"
+                            class="btn btn-default">{{ paginator.num_pages|add:-6 }}</button>
+                    <button style="width: 40px" onclick="to_page({{ paginator.num_pages|add:-5 }})"
+                            type="button"
+                            class="btn btn-default">{{ paginator.num_pages|add:-5 }}</button>
+                    <button style="width: 40px" onclick="to_page({{ paginator.num_pages|add:-4 }})"
+                            type="button"
+                            class="btn btn-default">{{ paginator.num_pages|add:-4 }}</button>
+                    <button style="width: 40px" onclick="to_page({{ paginator.num_pages|add:-3 }})"
+                            type="button"
+                            class="btn btn-default">{{ paginator.num_pages|add:-3 }}</button>
+                    <button style="width: 40px" onclick="to_page({{ paginator.num_pages|add:-2 }})"
+                            type="button"
+                            class="btn btn-default">{{ paginator.num_pages|add:-2 }}</button>
+                    <button style="width: 40px" onclick="to_page({{ paginator.num_pages|add:-1 }})"
+                            type="button"
+                            class="btn btn-default">{{ paginator.num_pages|add:-1 }}</button>
+                    <button style="width: 40px" onclick="to_page({{ paginator.num_pages }})" type="button"
+                            class="btn btn-default">{{ paginator.num_pages }}</button>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </div>
+    <div class="btn-group mr-2" role="group" aria-label="Third group">
+        <button onclick="to_page({{ page.number|add:1 }})" type="button" class="btn">下一页</button>
+    </div>
+</div>

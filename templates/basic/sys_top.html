@@ -1,0 +1,22 @@
+<header>
+    <div class="container-fluid navbar-fixed-top bg-primary">
+        <ul class="nav navbar-nav  left">
+            <li class="text-white h4">
+                <b>企业资质资源管理系统</b>
+            </li>
+        </ul>
+        <ul class="nav navbar-nav nav-pills right ">
+            <li class="bg-info dropdown">
+                <a class="dropdown-toggle text-center" href="#" style="width: 160px;" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-user"></span>&nbsp;<span>{{ request.session.login_sys_user.name }}</span><span
+                        class="caret"></span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-right">
+                    <li class="text-center"><a href="#"><span class="text-primary">帮助中心</span></a></li>
+                    <li class="divider"><a href="#"></a></li>
+                    <li class="text-center"><a href="/sys/logout/"><span class="text-primary">退出</span></a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</header>

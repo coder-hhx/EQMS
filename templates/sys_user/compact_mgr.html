@@ -1,0 +1,156 @@
+{% extends 'basic/base.html' %}
+
+{% block content_nav %}
+    <li>合同模板管理</li>
+{% endblock %}
+
+{% block title %}
+    合同模板管理
+{% endblock %}
+
+{% block content %}
+    <form>
+        <a class="btn btn-success" data-toggle="modal" data-target="#add1"
+           style="margin: 5px 0">上传合同模板</a>
+    </form>
+
+    <table class="table table-bordered table-striped text-center bg-info">
+        <thead>
+        <tr class="info">
+            <th class="text-left">合同模板</th>
+            <th class="text-center" width="200px"></th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for compact in page.object_list %}
+            <tr>
+                <td class="text-left">{{ compact }}</td>
+                <td>
+                    <a href="#" class="btn btn-info btn-sm" data-toggle="modal"
+                       onclick="download_compact('{{ compact }}')">下载</a>
+
+                    <a href="#" class="btn btn-danger btn-sm" data-toggle="modal"
+                       onclick="delete_compact('{{ compact }}')">删除</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 提示 -->
+    <div class="modal fade" id="info" tabindex="-1" role="dialog" aria-labelledby="add11">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="add11">提示信息</h4>
+                </div>
+
+                <div class="modal-body">
+
+                    <h4 id="msg"></h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">取消</button>
+                    <button type="button" onclick="delete_ajax()" class="btn btn-warning btn-sm" data-dismiss="modal">
+                        确定
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!--上传合同-->
+    <div class="modal fade" id="add1" tabindex="-1" role="dialog" aria-labelledby="add11">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="add11">上传合同模板</h4>
+                </div>
+                <div class="modal-body">
+                    <form action="" id="form_data" method="post" enctype="multipart/form-data" onsubmit="return false">
+                        <input type="file" id="InputCompact">
+                    </form>
+
+                    <br/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-sm" data-dismiss="modal">取消</button>
+                    <button onclick="upload_compact()" class="btn btn-primary btn-sm">上传
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include "basic/paginator.html" %}
+
+
+{% endblock %}
+
+{% block js %}
+    <script>
+
+        function to_page(num) {
+            if (num < 1) {
+                num = 1;
+            }
+            if (num > {{ paginator.num_pages }}) {
+                num = {{ paginator.num_pages }};
+            }
+            window.location.href = "/sys/compact_mgr/?page_num=" + num;
+        }
+
+        function upload_compact() {
+            var formData = new FormData();
+            formData.append("compact", $("#InputCompact")[0].files[0]);
+            $.ajax({
+                url: '/sys/upload_compact/',
+                type: 'POST',
+                data: formData,
+                processData: false,    // 不处理数据
+                contentType: false,    // 不设置内容类型
+                success: function (resp) {
+                    $('.alert').html(resp.msg).addClass('alert-success').fadeIn().delay(500).fadeOut();
+                    setTimeout(function () {
+                        if (resp.status == 200) {
+                            open(window.location.href, target = '_self');
+                        }
+                    }, 1600);
+                }
+            });
+        }
+
+        function download_compact(compact) {
+            window.location.href = '/sys/download_compact/?file_name=' + compact;
+        }
+
+        let compact = '';
+
+        function delete_compact(name) {
+            compact = name;
+            $('#msg').html("确认删除该合同模板？");
+            $('#info').modal('toggle');
+        }
+
+        function delete_ajax() {
+            $.ajax({
+                url: '/sys/delete_compact/',
+                type: 'GET',
+                data: {'file_name': compact},
+                success: function (resp) {
+                    $('.alert').html(resp.msg).addClass('alert-success').fadeIn().delay(500).fadeOut();
+                    setTimeout(function () {
+                        if (resp.status == 200) {
+                            open(window.location.href, target = '_self');
+                        }
+                    }, 1600);
+                }
+            });
+        }
+    </script>
+{% endblock %}
